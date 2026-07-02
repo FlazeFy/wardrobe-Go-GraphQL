@@ -5,6 +5,15 @@ type Dictionary {
     createdAt: String!
 }
 
+input CreateDictionaryInput {
+    dictionaryType: String!
+    dictionaryName: String!
+}
+
 type Query {
     dictionaries: [Dictionary!]!
+}
+
+type Mutation {
+    createDictionary(input: CreateDictionaryInput!): Dictionary!
 }

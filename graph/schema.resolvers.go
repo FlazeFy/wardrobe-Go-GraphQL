@@ -12,6 +12,26 @@ import (
 	"wardrobe-graphql/graph/model"
 )
 
+// CreateDictionary is the resolver for the createDictionary field.
+func (r *mutationResolver) CreateDictionary(ctx context.Context, input model.CreateDictionaryInput) (*model.Dictionary, error) {
+	// Service : Create dictionary
+	dictionary, err := r.DictionaryService.CreateDictionary(
+		input.DictionaryType,
+		input.DictionaryName,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Dictionary{
+		ID:             dictionary.ID.String(),
+		DictionaryType: dictionary.DictionaryType,
+		DictionaryName: dictionary.DictionaryName,
+		CreatedAt:      dictionary.CreatedAt.Format(time.RFC3339),
+	}, nil
+}
+
 // Dictionaries is the resolver for the dictionaries field.
 func (r *queryResolver) Dictionaries(ctx context.Context) ([]*model.Dictionary, error) {
 	// Service : Find all dictionary
@@ -34,7 +54,13 @@ func (r *queryResolver) Dictionaries(ctx context.Context) ([]*model.Dictionary, 
 	return result, nil
 }
 
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-type queryResolver struct{ *Resolver }
+type (
+	mutationResolver struct{ *Resolver }
+	queryResolver    struct{ *Resolver }
+)

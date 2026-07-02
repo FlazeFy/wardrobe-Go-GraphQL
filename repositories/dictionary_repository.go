@@ -16,6 +16,7 @@ func NewDictionaryRepository(db *gorm.DB) *DictionaryRepository {
 	}
 }
 
+// Query
 func (r *DictionaryRepository) FindAllDictionaries() ([]models.Dictionary, error) {
 	// Model
 	var dictionaries []models.Dictionary
@@ -28,4 +29,9 @@ func (r *DictionaryRepository) FindAllDictionaries() ([]models.Dictionary, error
 	}
 
 	return dictionaries, nil
+}
+
+// Mutation
+func (r *DictionaryRepository) CreateDictionary(dictionary *models.Dictionary) error {
+	return r.db.Create(dictionary).Error
 }
