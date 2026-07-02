@@ -1,0 +1,10 @@
+type Dictionary {
+    id: ID!
+    dictionaryType: String!
+    dictionaryName: String!
+    createdAt: String!
+}
+
+type Query {
+    dictionaries: [Dictionary!]!
+}
