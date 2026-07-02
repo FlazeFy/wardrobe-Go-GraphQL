@@ -40,3 +40,19 @@ func (s *DictionaryService) CreateDictionary(dictionaryType, dictionaryName stri
 
 	return dictionary, nil
 }
+
+func (s *DictionaryService) DeleteDictionaryById(id string) (bool, error) {
+	// Validate Id
+	uuidID, err := uuid.Parse(id)
+	if err != nil {
+		return false, err
+	}
+
+	// Repo : Delete dictionary by id
+	err = s.repo.DeleteDictionaryById(uuidID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

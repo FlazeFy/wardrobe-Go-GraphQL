@@ -3,6 +3,7 @@ package repositories
 import (
 	"wardrobe-graphql/models"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -34,4 +35,8 @@ func (r *DictionaryRepository) FindAllDictionaries() ([]models.Dictionary, error
 // Mutation
 func (r *DictionaryRepository) CreateDictionary(dictionary *models.Dictionary) error {
 	return r.db.Create(dictionary).Error
+}
+
+func (r *DictionaryRepository) DeleteDictionaryById(id uuid.UUID) error {
+	return r.db.Delete(&models.Dictionary{}, "id = ?", id).Error
 }

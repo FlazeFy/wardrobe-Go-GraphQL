@@ -32,6 +32,11 @@ func (r *mutationResolver) CreateDictionary(ctx context.Context, input model.Cre
 	}, nil
 }
 
+// DeleteDictionaryByID is the resolver for the deleteDictionaryById field.
+func (r *mutationResolver) DeleteDictionaryByID(ctx context.Context, id string) (bool, error) {
+	return r.DictionaryService.DeleteDictionaryById(id)
+}
+
 // Dictionaries is the resolver for the dictionaries field.
 func (r *queryResolver) Dictionaries(ctx context.Context) ([]*model.Dictionary, error) {
 	// Service : Find all dictionary
