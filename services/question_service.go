@@ -15,6 +15,12 @@ func NewQuestionService(repo *repository.QuestionRepository) *QuestionService {
 	}
 }
 
+// Query
+func (r *QuestionService) FindRandomAnsweredQuestion(limit int) ([]models.Question, error) {
+	return r.repo.FindRandomAnsweredQuestion(limit)
+}
+
+// Mutation
 func (r *QuestionService) CreateQuestion(question *models.Question) error {
 	return r.repo.CreateQuestion(question)
 }

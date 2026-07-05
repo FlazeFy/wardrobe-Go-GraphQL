@@ -17,6 +17,22 @@ func NewQuestionRepository(db *gorm.DB) *QuestionRepository {
 	}
 }
 
+// Query
+func (r *QuestionRepository) FindRandomAnsweredQuestion(limit int) ([]models.Question, error) {
+	// Model
+	var questions []models.Question
+
+	// ORM
+	err := r.db.Order("RANDOM()").Where("answer is not null").Limit(limit).Find(&questions).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return questions, nil
+}
+
+// Mutation
 func (r *QuestionRepository) CreateQuestion(question *models.Question) error {
 	// Default
 	question.ID = uuid.New()

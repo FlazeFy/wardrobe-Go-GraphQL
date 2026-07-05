@@ -16,6 +16,7 @@ func NewFeedbackService(repo *repository.FeedbackRepository) *FeedbackService {
 	}
 }
 
+// Mutation
 func (s *FeedbackService) DeleteFeedbackById(id string) (bool, error) {
 	// Validate Id
 	uuidID, err := uuid.Parse(id)

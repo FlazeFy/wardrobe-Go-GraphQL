@@ -84,6 +84,35 @@ func (r *queryResolver) Dictionaries(ctx context.Context) ([]*model.Dictionary, 
 	return result, nil
 }
 
+// QuestionAnswered is the resolver for the questionAnswered field.
+func (r *queryResolver) QuestionAnswered(ctx context.Context, limit *int) ([]*model.Question, error) {
+	// Param Optional
+	limitParam := 6
+	if limit != nil {
+		limitParam = *limit
+	}
+
+	// Service : Find random question answer
+	data, err := r.QuestionService.FindRandomAnsweredQuestion(limitParam)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*model.Question, 0)
+	for _, d := range data {
+		result = append(result, &model.Question{
+			ID:        d.ID.String(),
+			Question:  d.Question,
+			Answer:    d.Answer,
+			IsShow:    d.IsShow,
+			CreatedAt: d.CreatedAt.Format(time.RFC3339),
+		})
+	}
+
+	return result, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

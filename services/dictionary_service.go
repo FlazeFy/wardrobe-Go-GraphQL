@@ -18,10 +18,12 @@ func NewDictionaryService(repo *repository.DictionaryRepository) *DictionaryServ
 	}
 }
 
+// Query
 func (s *DictionaryService) FindAllDictionaries() ([]models.Dictionary, error) {
 	return s.repo.FindAllDictionaries()
 }
 
+// Mutation
 func (s *DictionaryService) CreateDictionary(dictionaryType, dictionaryName string) (*models.Dictionary, error) {
 	// Prepare model
 	dictionary := &models.Dictionary{
