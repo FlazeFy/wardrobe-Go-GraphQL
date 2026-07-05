@@ -62,6 +62,11 @@ func (r *mutationResolver) DeleteFeedbackByID(ctx context.Context, id string) (b
 	return r.FeedbackService.DeleteFeedbackById(id)
 }
 
+// DeleteQuestionByID is the resolver for the deleteQuestionById field.
+func (r *mutationResolver) DeleteQuestionByID(ctx context.Context, id string) (bool, error) {
+	return r.QuestionService.DeleteQuestionById(id)
+}
+
 // Dictionaries is the resolver for the dictionaries field.
 func (r *queryResolver) Dictionaries(ctx context.Context) ([]*model.Dictionary, error) {
 	// Service : Find all dictionary

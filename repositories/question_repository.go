@@ -42,3 +42,7 @@ func (r *QuestionRepository) CreateQuestion(question *models.Question) error {
 	// Query
 	return r.db.Create(question).Error
 }
+
+func (r *QuestionRepository) DeleteQuestionById(id uuid.UUID) error {
+	return r.db.Delete(&models.Question{}, "id = ?", id).Error
+}

@@ -3,6 +3,8 @@ package services
 import (
 	"wardrobe-graphql/models"
 	repository "wardrobe-graphql/repositories"
+
+	"github.com/google/uuid"
 )
 
 type QuestionService struct {
@@ -16,11 +18,27 @@ func NewQuestionService(repo *repository.QuestionRepository) *QuestionService {
 }
 
 // Query
-func (r *QuestionService) FindRandomAnsweredQuestion(limit int) ([]models.Question, error) {
-	return r.repo.FindRandomAnsweredQuestion(limit)
+func (s *QuestionService) FindRandomAnsweredQuestion(limit int) ([]models.Question, error) {
+	return s.repo.FindRandomAnsweredQuestion(limit)
 }
 
 // Mutation
-func (r *QuestionService) CreateQuestion(question *models.Question) error {
-	return r.repo.CreateQuestion(question)
+func (s *QuestionService) CreateQuestion(question *models.Question) error {
+	return s.repo.CreateQuestion(question)
+}
+
+func (s *QuestionService) DeleteQuestionById(id string) (bool, error) {
+	// Validate Id
+	uuidID, err := uuid.Parse(id)
+	if err != nil {
+		return false, err
+	}
+
+	// Repo : Delete Question by id
+	err = s.repo.DeleteQuestionById(uuidID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
