@@ -5,4 +5,5 @@ import "wardrobe-graphql/services"
 type Resolver struct {
 	DictionaryService *services.DictionaryService
 	FeedbackService   *services.FeedbackService
+	QuestionService   *services.QuestionService
 }

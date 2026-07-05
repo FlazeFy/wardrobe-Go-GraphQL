@@ -27,15 +27,18 @@ func main() {
 	// Repository
 	repoDictionary := repositories.NewDictionaryRepository(db)
 	repoFeedback := repositories.NewFeedbackRepository(db)
+	repoQuestion := repositories.NewQuestionRepository(db)
 
 	// Service
 	serviceDictionary := services.NewDictionaryService(repoDictionary)
 	serviceFeedback := services.NewFeedbackService(repoFeedback)
+	serviceQuestion := services.NewQuestionService(repoQuestion)
 
 	// Resolver
 	resolver := &graph.Resolver{
 		DictionaryService: serviceDictionary,
 		FeedbackService:   serviceFeedback,
+		QuestionService:   serviceQuestion,
 	}
 
 	srv := handler.NewDefaultServer(

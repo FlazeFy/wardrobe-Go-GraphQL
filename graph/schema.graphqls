@@ -5,6 +5,18 @@ type Dictionary {
     createdAt: String!
 }
 
+type Question {
+    id: ID!
+    question: String!
+    answer: String
+    is_show: Boolean!
+    createdAt: String!
+}
+
+input CreateQuestionInput {
+    question: String!
+}
+
 input CreateDictionaryInput {
     dictionaryType: String!
     dictionaryName: String!
@@ -16,6 +28,7 @@ type Query {
 
 type Mutation {
     createDictionary(input: CreateDictionaryInput!): Dictionary!
+    createQuestion(input: CreateQuestionInput!): Question!
     deleteDictionaryById(id: ID!): Boolean!
     deleteFeedbackById(id: ID!): Boolean!
 }
