@@ -17,4 +17,5 @@ type Query {
 type Mutation {
     createDictionary(input: CreateDictionaryInput!): Dictionary!
     deleteDictionaryById(id: ID!): Boolean!
+    deleteFeedbackById(id: ID!): Boolean!
 }

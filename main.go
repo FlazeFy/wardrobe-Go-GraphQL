@@ -25,14 +25,17 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// Repository
-	repo := repositories.NewDictionaryRepository(db)
+	repoDictionary := repositories.NewDictionaryRepository(db)
+	repoFeedback := repositories.NewFeedbackRepository(db)
 
 	// Service
-	service := services.NewDictionaryService(repo)
+	serviceDictionary := services.NewDictionaryService(repoDictionary)
+	serviceFeedback := services.NewFeedbackService(repoFeedback)
 
 	// Resolver
 	resolver := &graph.Resolver{
-		DictionaryService: service,
+		DictionaryService: serviceDictionary,
+		FeedbackService:   serviceFeedback,
 	}
 
 	srv := handler.NewDefaultServer(
