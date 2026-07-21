@@ -10,6 +10,7 @@ import (
 	"time"
 	"wardrobe-graphql/graph/generated"
 	"wardrobe-graphql/graph/model"
+	"wardrobe-graphql/graph/validators"
 	"wardrobe-graphql/models"
 )
 
@@ -35,6 +36,10 @@ func (r *mutationResolver) CreateDictionary(ctx context.Context, input model.Cre
 
 // CreateQuestion is the resolver for the createQuestion field.
 func (r *mutationResolver) CreateQuestion(ctx context.Context, input model.CreateQuestionInput) (*model.Question, error) {
+	if err := validators.CreateQuestionInput(input.Question); err != nil {
+		return nil, err
+	}
+
 	question := &models.Question{
 		Question: input.Question,
 	}
