@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"wardrobe-graphql/helpers"
 	"wardrobe-graphql/tests/integration/client"
 	"wardrobe-graphql/tests/integration/queries"
 
@@ -38,6 +39,12 @@ func TestCreateQuestion_ValidData(t *testing.T) {
 	assert.Nil(t, data.CreateQuestion.Answer)
 	assert.False(t, data.CreateQuestion.IsShow)
 	assert.NotEmpty(t, data.CreateQuestion.CreatedAt)
+
+	// Store data
+	err = helpers.SetValue("question_id", data.CreateQuestion.ID)
+	require.NoError(t, err)
+	err = helpers.SetValue("question", data.CreateQuestion.Question)
+	require.NoError(t, err)
 }
 
 func TestCreateQuestion_QuestionTooShort(t *testing.T) {

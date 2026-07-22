@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"wardrobe-graphql/helpers"
 	"wardrobe-graphql/tests/integration/client"
 	"wardrobe-graphql/tests/integration/queries"
 
@@ -38,6 +39,14 @@ func TestCreateDictionary_ValidData(t *testing.T) {
 	assert.Equal(t, "clothes_type", data.CreateDictionary.DictionaryType)
 	assert.Equal(t, "shirt", data.CreateDictionary.DictionaryName)
 	assert.NotEmpty(t, data.CreateDictionary.CreatedAt)
+
+	// Store data
+	err = helpers.SetValue("dictionary_id", data.CreateDictionary.ID)
+	require.NoError(t, err)
+	err = helpers.SetValue("dictionary_name", data.CreateDictionary.DictionaryName)
+	require.NoError(t, err)
+	err = helpers.SetValue("dictionary_type", data.CreateDictionary.DictionaryType)
+	require.NoError(t, err)
 }
 
 func TestCreateDictionary_DictionaryTooShort(t *testing.T) {
