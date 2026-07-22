@@ -1,0 +1,134 @@
+name: Wardrobe Integration Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: wardrobe
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_NAME: wardrobe
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SSLMODE: disable
+      GRAPHQL_ENDPOINT: http://127.0.0.1:8080/query
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Copy Environment
+        run: cp .env.example .env
+
+      - name: Verify Module Context
+        run: |
+          pwd
+          ls -la
+          test -f go.mod || (echo "go.mod not found in repo root — is it committed to git?" && exit 1)
+          cat go.mod
+          go env GOFLAGS GO111MODULE GOROOT GOPATH
+
+      - name: Install Go Dependencies
+        run: |
+          go mod download
+          go mod tidy
+
+      - name: Generate Gqlgen Code
+        run: go run github.com/99designs/gqlgen generate
+
+      - name: Build Server
+        run: go build -o wardrobe-server main.go
+
+      - name: Start Server
+        run: ./wardrobe-server &
+
+      - name: Wait for Server
+        run: |
+          for i in {1..10}; do
+            curl -s http://127.0.0.1:8080/query && break
+            sleep 1
+          done
+
+      - name: Prepare Report Directories
+        run: mkdir -p tests_reports
+
+      - name: Run Integration Tests
+        id: tests
+        continue-on-error: true
+        run: |
+          go test ./tests/integration/... -v 2>&1 | tee tests_reports/integration-test.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Show Server Log On Failure
+        if: steps.tests.outcome == 'failure'
+        run: |
+          if [ -f server.log ]; then
+            cat server.log
+          else
+            echo "No server.log file found — no errors were logged."
+          fi
+
+      - name: Zip Test Reports
+        if: always()
+        run: zip -r test-report.zip tests_reports 2>/dev/null || true
+
+      - name: Send Test Report Via Email
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "Integration Test Report - ${{ steps.tests.outcome }} - ${{ github.repository }}"
+          to: ${{ secrets.MAIL_TO }}
+          from: Wardrobe Automation Test Bot
+          body: |
+            Test run finished with status: ${{ steps.tests.outcome }}
+
+            Module: Integration Tests
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+
+            See attached test report
+          attachments: test-report.zip
+
+      - name: Clean Up Report Artifacts
+        if: always()
+        run: rm -rf tests_reports test-report.zip
+
+      - name: Fail Job If Tests Failed
+        if: steps.tests.outcome == 'failure'
+        run: exit 1

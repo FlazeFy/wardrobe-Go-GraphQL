@@ -5,6 +5,7 @@ import (
 	"wardrobe-graphql/config"
 	"wardrobe-graphql/graph"
 	"wardrobe-graphql/graph/generated"
+	"wardrobe-graphql/models"
 	"wardrobe-graphql/repositories"
 	"wardrobe-graphql/services"
 
@@ -23,6 +24,15 @@ func main() {
 
 	// Connect DB
 	db := config.ConnectDatabase()
+
+	// Migrate schema
+	if err := db.AutoMigrate(
+		&models.Question{},
+		&models.Dictionary{},
+		&models.Feedback{},
+	); err != nil {
+		log.Fatal("Failed to migrate database schema: ", err)
+	}
 
 	// Repository
 	repoDictionary := repositories.NewDictionaryRepository(db)
