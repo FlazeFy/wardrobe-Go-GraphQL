@@ -16,6 +16,11 @@ import (
 
 // CreateDictionary is the resolver for the createDictionary field.
 func (r *mutationResolver) CreateDictionary(ctx context.Context, input model.CreateDictionaryInput) (*model.Dictionary, error) {
+	// Validator request
+	if err := validators.CreateDictionaryInput(input.DictionaryName, input.DictionaryType); err != nil {
+		return nil, err
+	}
+
 	// Service : Create dictionary
 	dictionary, err := r.DictionaryService.CreateDictionary(
 		input.DictionaryType,
@@ -36,6 +41,7 @@ func (r *mutationResolver) CreateDictionary(ctx context.Context, input model.Cre
 
 // CreateQuestion is the resolver for the createQuestion field.
 func (r *mutationResolver) CreateQuestion(ctx context.Context, input model.CreateQuestionInput) (*model.Question, error) {
+	// Validator request
 	if err := validators.CreateQuestionInput(input.Question); err != nil {
 		return nil, err
 	}
@@ -44,6 +50,7 @@ func (r *mutationResolver) CreateQuestion(ctx context.Context, input model.Creat
 		Question: input.Question,
 	}
 
+	// Service : Create question
 	if err := r.QuestionService.CreateQuestion(question); err != nil {
 		return nil, err
 	}
