@@ -11,16 +11,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateQuestion_ValidData(t *testing.T) {
+func TestCreateDictionary_ValidData(t *testing.T) {
 	c := client.New()
 
 	// Exec
 	resp, err := c.Do(client.Request{
-		Query: queries.CreateQuestionMutation,
+		Query: queries.CreateDictionaryMutation,
 		Variables: map[string]interface{}{
 			// Test Data
 			"input": map[string]interface{}{
-				"question": "lorem ipsum?",
+				"dictionaryType": "clothes_type",
+				"dictionaryName": "shirt",
 			},
 		},
 	})
@@ -29,27 +30,27 @@ func TestCreateQuestion_ValidData(t *testing.T) {
 	// Validate empty error message
 	require.False(t, resp.HasErrors(), resp.FirstErrorMessage())
 
-	var data queries.CreateQuestionData
+	var data queries.CreateDictionaryData
 	require.NoError(t, resp.Unmarshal(&data))
 
 	// Validate response
-	assert.NotEmpty(t, data.CreateQuestion.ID)
-	assert.Equal(t, "lorem ipsum?", data.CreateQuestion.Question)
-	assert.Nil(t, data.CreateQuestion.Answer)
-	assert.False(t, data.CreateQuestion.IsShow)
-	assert.NotEmpty(t, data.CreateQuestion.CreatedAt)
+	assert.NotEmpty(t, data.CreateDictionary.ID)
+	assert.Equal(t, "clothes_type", data.CreateDictionary.DictionaryType)
+	assert.Equal(t, "shirt", data.CreateDictionary.DictionaryName)
+	assert.NotEmpty(t, data.CreateDictionary.CreatedAt)
 }
 
-func TestCreateQuestion_QuestionTooShort(t *testing.T) {
+func TestCreateDictionary_DictionaryTooShort(t *testing.T) {
 	c := client.New()
 
 	// Exec
 	resp, err := c.Do(client.Request{
-		Query: queries.CreateQuestionMutation,
+		Query: queries.CreateDictionaryMutation,
 		Variables: map[string]interface{}{
 			// Test Data
 			"input": map[string]interface{}{
-				"question": "short",
+				"dictionaryType": "clothes_type",
+				"dictionaryName": "sh",
 			},
 		},
 	})
@@ -59,19 +60,20 @@ func TestCreateQuestion_QuestionTooShort(t *testing.T) {
 	require.True(t, resp.HasErrors())
 
 	// Validate response
-	assert.Contains(t, resp.FirstErrorMessage(), "question min length is 10 characters")
+	assert.Contains(t, resp.FirstErrorMessage(), "dictionaryName min length is 3 characters")
 }
 
-func TestCreateQuestion_QuestionTooLong(t *testing.T) {
+func TestCreateDictionary_DictionaryTooLong(t *testing.T) {
 	c := client.New()
 
 	// Exec
 	resp, err := c.Do(client.Request{
-		Query: queries.CreateQuestionMutation,
+		Query: queries.CreateDictionaryMutation,
 		Variables: map[string]interface{}{
 			// Test Data
 			"input": map[string]interface{}{
-				"question": strings.Repeat("a", 501),
+				"dictionaryType": strings.Repeat("a", 37),
+				"dictionaryName": "shirt",
 			},
 		},
 	})
@@ -81,19 +83,20 @@ func TestCreateQuestion_QuestionTooLong(t *testing.T) {
 	require.True(t, resp.HasErrors())
 
 	// Validate response
-	assert.Contains(t, resp.FirstErrorMessage(), "question max length is 500 characters")
+	assert.Contains(t, resp.FirstErrorMessage(), "dictionaryType max length is 36 characters")
 }
 
-func TestCreateQuestion_EmptyQuestion(t *testing.T) {
+func TestCreateDictionary_EmptyDictionary(t *testing.T) {
 	c := client.New()
 
 	// Exec
 	resp, err := c.Do(client.Request{
-		Query: queries.CreateQuestionMutation,
+		Query: queries.CreateDictionaryMutation,
 		Variables: map[string]interface{}{
 			// Test Data
 			"input": map[string]interface{}{
-				"question": "",
+				"dictionaryType": "clothes_type",
+				"dictionaryName": "",
 			},
 		},
 	})
@@ -103,5 +106,5 @@ func TestCreateQuestion_EmptyQuestion(t *testing.T) {
 	require.True(t, resp.HasErrors())
 
 	// Validate response
-	assert.Contains(t, resp.FirstErrorMessage(), "question is required")
+	assert.Contains(t, resp.FirstErrorMessage(), "dictionaryName is required")
 }
